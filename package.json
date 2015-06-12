@@ -19,6 +19,8 @@
   "author": "haoxin",
   "license": "MIT",
   "devDependencies": {
+    "bluebird": "^2.9.27",
+    "deasync": "^0.1.0",
     "findit": "^2.0.0",
     "gulp": "*",
     "istanbul": "*",

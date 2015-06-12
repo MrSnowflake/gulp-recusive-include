@@ -98,17 +98,33 @@ module.exports = function(options) {
     
     var finder = findit(filebase);
     
+    var fileFound;
+    var count = 0;
+
     finder.on('directory', function (dir, stat, stop) {
-      var base = path.basename(dir);
-      
-      var file = path.resolve(base, filename);
-      
-      if (fs.exists(file)) {
+      var file = path.resolve(filebase, dir, filename);
+
+	  if (fs.existsSync(file)) {
+        fileFound = file;
         stop();
-        console.debug('found', file);
-        return file;
+        return;
       }
+
+      count++;
+      if (count == 2)
+      	throw new Error('File Error ' + filebase + ' ' +  dir +  ' ' + fileFound);
     });
+
+    finder.on('end', function (dir, stat, stop) {
+      if (!fileFound) {
+	      fileFound = null;
+	      throw new Error('file not found');
+	  }
+    });
+
+    require('deasync').loopWhile(function(){return fileFound === undefined;});
+
+    return fileFound;
   }
 
   function include(file, text) {
@@ -127,6 +143,9 @@ module.exports = function(options) {
       var match = matches[0];
       var includePath = resolveFile(filebase, matches[1]);
 
+      if (includePath === null) {
+        throw new Error('Include not found: ' + matches[1]);
+	  }
       if (currentFilename.toLowerCase() === includePath.toLowerCase()) {
         throw new Error('recursion detected in file: ' + currentFilename);
       }
