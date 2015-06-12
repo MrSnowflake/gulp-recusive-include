@@ -1,0 +1,8 @@
+this is index
+
+@@include('a.txt')
+@@include('b.txt')
+
+@@include('var.txt', {
+  "name": "from index.txt"
+})

@@ -1,5 +1,5 @@
 {
-  "name": "gulp-file-include",
+  "name": "gulp-recursive-include",
   "version": "0.9.0",
   "description": "a gulp plugin for file include",
   "main": "index.js",
@@ -7,10 +7,6 @@
     "test": "mocha -R spec -t 200 test/*.js",
     "test-cov": "istanbul cover node_modules/.bin/_mocha -- -R dot -t 200 test/*.js",
     "test-travis": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- -R dot -t 200 test/*.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/coderhaoxin/gulp-file-include.git"
   },
   "keywords": [
     "gulpplugin",
@@ -22,15 +18,12 @@
   ],
   "author": "haoxin",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/coderhaoxin/gulp-file-include/issues"
-  },
-  "homepage": "https://github.com/coderhaoxin/gulp-file-include",
   "devDependencies": {
+    "findit": "^2.0.0",
     "gulp": "*",
     "istanbul": "*",
     "markdown": "*",
-    "mocha": "*",
+    "mocha": "^2.2.5",
     "should": "*"
   },
   "dependencies": {

@@ -5,7 +5,7 @@ var fileIncludePlugin = require('..'),
   should = require('should'),
   fs = require('fs');
 
-describe('## gulp-file-include', function() {
+describe('## gulp-recursive-include', function() {
   var result = fs.readFileSync('test/fixtures/result.html', 'utf8');
   var resultJS = fs.readFileSync('test/fixtures/result.js', 'utf8');
   var resultSamePrefix = fs.readFileSync('test/fixtures/sameprefix-result.html', 'utf8');

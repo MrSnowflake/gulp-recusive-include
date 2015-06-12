@@ -5,10 +5,11 @@ var concat = require('concat-stream'),
   through = require('through2'),
   gutil = require('gulp-util'),
   path = require('path'),
-  fs = require('fs');
+  fs = require('fs'),
+  findit = require('findit');
 
 module.exports = function(options) {
-  var prefix, suffix, basepath, filters, context;
+  var prefix, suffix, basepath, filters, context, recursive;
 
   if (typeof options === 'object') {
     basepath = options.basepath || '@file';
@@ -16,11 +17,13 @@ module.exports = function(options) {
     suffix = options.suffix || '';
     context = options.context || {};
     filters = options.filters;
+    recursive = options.recursive === true;
   } else {
     prefix = options || '@@';
     suffix = '';
     basepath = '@file';
     context = {};
+    recursive = false;
   }
 
   var includeRegExp = new RegExp(prefix + 'include\\s*\\([^)"\']*["\']([^"\']*)["\'](,\\s*({[\\s\\S]*?})){0,1}\\s*\\)+' + suffix);
@@ -88,6 +91,25 @@ module.exports = function(options) {
 
     return content;
   }
+  
+  function resolveFile(filebase, filename) {
+    if (!recursive)
+      return path.resolve(filebase, filename);
+    
+    var finder = findit(filebase);
+    
+    finder.on('directory', function (dir, stat, stop) {
+      var base = path.basename(dir);
+      
+      var file = path.resolve(base, filename);
+      
+      if (fs.exists(file)) {
+        stop();
+        console.debug('found', file);
+        return file;
+      }
+    });
+  }
 
   function include(file, text) {
     text = stripCommentedIncludes(text);
@@ -103,7 +125,7 @@ module.exports = function(options) {
 
     while (matches) {
       var match = matches[0];
-      var includePath = path.resolve(filebase, matches[1]);
+      var includePath = resolveFile(filebase, matches[1]);
 
       if (currentFilename.toLowerCase() === includePath.toLowerCase()) {
         throw new Error('recursion detected in file: ' + currentFilename);
