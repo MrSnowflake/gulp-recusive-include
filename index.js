@@ -91,6 +91,20 @@ module.exports = function(options) {
 
     return content;
   }
+
+  function fileExists(filebase, dir, filename) {
+    var file = path.resolve(filebase, dir, filename);
+
+    if (fs.existsSync(file))
+      return file;
+
+    file = path.resolve(filebase, dir, '_' + filename);
+
+    if (fs.existsSync(file))
+      return file;
+
+    return null;
+  }
   
   function resolveFile(filebase, filename) {
     if (!recursive)
@@ -102,24 +116,17 @@ module.exports = function(options) {
     var count = 0;
 
     finder.on('directory', function (dir, stat, stop) {
-      var file = path.resolve(filebase, dir, filename);
-
-	  if (fs.existsSync(file)) {
+      var file = null;
+      if ((file = fileExists(filebase, dir, filename)) !== null) {
         fileFound = file;
         stop();
         return;
       }
-
-      count++;
-      if (count == 2)
-      	throw new Error('File Error ' + filebase + ' ' +  dir +  ' ' + fileFound);
     });
 
     finder.on('end', function (dir, stat, stop) {
-      if (!fileFound) {
+      if (!fileFound)
 	      fileFound = null;
-	      throw new Error('file not found');
-	  }
     });
 
     require('deasync').loopWhile(function(){return fileFound === undefined;});
